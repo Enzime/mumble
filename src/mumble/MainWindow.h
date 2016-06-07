@@ -79,7 +79,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		GlobalShortcut *gsMinimal, *gsVolumeUp, *gsVolumeDown, *gsWhisper, *gsLinkChannel;
 		GlobalShortcut *gsCycleTransmitMode;
 		GlobalShortcut *gsSendTextMessage;
-		DockTitleBar *dtbLogDockTitle, *dtbChatDockTitle;
+		DockTitleBar *dtbLogDockTitle, *dtbChatDockTitle, *dtbPingDockTitle;
 
 		ACLEditor *aclEdit;
 		BanEditor *banEdit;
@@ -133,7 +133,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 #endif
 	protected:
 		Usage uUsage;
-		QTimer *qtReconnect;
+		QTimer *qtReconnect, *qtPingUpdate;
 
 		QList<QAction *> qlServerActions;
 		QList<QAction *> qlChannelActions;
@@ -243,6 +243,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void on_qteLog_customContextMenuRequested(const QPoint &pos);
 		void on_qteLog_anchorClicked(const QUrl &);
 		void on_qteLog_highlighted(const QUrl & link);
+		void on_qtePing_tick();
 		void on_PushToTalk_triggered(bool, QVariant);
 		void on_PushToMute_triggered(bool, QVariant);
 		void on_VolumeUp_triggered(bool, QVariant);

@@ -162,6 +162,40 @@
      <bool>false</bool>
     </property>
    </widget>
+   </widget>
+  <widget class="QDockWidget" name="qdwPing">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="toolTip">
+    <string/>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Pingbar</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="PingStatusBar" name="qtePing">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>16777215</height>
+     </size>
+    </property>
+   </widget>
   </widget>
   <widget class="QToolBar" name="qtIconToolbar">
    <property name="windowTitle">
@@ -902,6 +936,11 @@ the channel's context menu.</string>
   <customwidget>
    <class>LogTextBrowser</class>
    <extends>QTextBrowser</extends>
+   <header>CustomElements.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PingStatusBar</class>
+   <extends>QStatusBar</extends>
    <header>CustomElements.h</header>
   </customwidget>
  </customwidgets>

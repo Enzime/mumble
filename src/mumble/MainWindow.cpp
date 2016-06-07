@@ -137,6 +137,10 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	qtReconnect->setSingleShot(true);
 	qtReconnect->setObjectName(QLatin1String("Reconnect"));
 
+	qtPingUpdate = new QTimer(this);
+	qtPingUpdate->setInterval(200);
+	connect(qtPingUpdate, SIGNAL(timeout()), this, SLOT(on_qtePing_tick()));
+
 	qmUser = new QMenu(tr("&User"), this);
 	qmChannel = new QMenu(tr("&Channel"), this);
 
@@ -250,6 +254,7 @@ void MainWindow::setupGui()  {
 	qteChat->setAttribute(Qt::WA_MacShowFocusRect, false);
 	qteChat->setFrameShape(QFrame::NoFrame);
 	qteLog->setFrameStyle(QFrame::NoFrame);
+	qtePing->setFrameStyle(QFrame::NoFrame);
 #endif
 
 	LogDocument *ld = new LogDocument(qteLog);
@@ -295,6 +300,11 @@ void MainWindow::setupGui()  {
 	qdwChat->installEventFilter(dtbChatDockTitle);
 	qteChat->setDefaultText(tr("<center>Not connected</center>"), true);
 	qteChat->setEnabled(false);
+
+	dtbPingDockTitle = new DockTitleBar();
+	qdwPing->setTitleBarWidget(dtbPingDockTitle);
+	qdwPing->installEventFilter(dtbPingDockTitle);
+	connect(gsMinimal, SIGNAL(down(QVariant)), qaConfigMinimal, SLOT(trigger()));
 
 	setShowDockTitleBars(g.s.wlWindowLayout == Settings::LayoutCustom);
 
@@ -980,6 +990,7 @@ void MainWindow::setupView(bool toggle_minimize) {
 	if (! showit) {
 		qdwLog->setVisible(showit);
 		qdwChat->setVisible(showit);
+		qdwPing->setVisible(showit);
 		qtIconToolbar->setVisible(showit);
 	}
 	menuBar()->setVisible(showit);
@@ -2720,6 +2731,8 @@ void MainWindow::serverConnected() {
 	qmUser_aboutToShow();
 	on_qmConfig_aboutToShow();
 
+	qtPingUpdate->start(200);
+
 #ifdef Q_OS_WIN
 	TaskList::addToRecentList(g.s.qsLastServer, uname, host, port);
 #endif
@@ -2735,6 +2748,9 @@ void MainWindow::serverDisconnected(QAbstractSocket::SocketError err, QString re
 	qtvUsers->setCurrentIndex(QModelIndex());
 	qteChat->setEnabled(false);
 	updateTrayIcon();
+
+	qtePing->showMessage(tr("Disconnected"));
+	qtPingUpdate->stop();
 
 #ifdef Q_OS_MAC
 	// Remove App Nap suppression now that we're disconnected.
@@ -3015,6 +3031,13 @@ void MainWindow::customEvent(QEvent *evt) {
 #undef MUMBLE_MH_MSG
 }
 
+void MainWindow::on_qtePing_tick() {
+	// qWarning() << "hey!";
+	qtePing->showMessage(tr("%1 ms ± %2").arg(
+	            QString::fromLatin1("%1").arg(boost::accumulators::mean(g.sh->accTCP), 0, 'f', 2),
+	            QString::fromLatin1("%1").arg(sqrt(boost::accumulators::variance(g.sh->accTCP)),0,'f',2)
+	));
+}
 
 void MainWindow::on_qteLog_anchorClicked(const QUrl &url) {
 	if (!handleSpecialContextMenu(url, QCursor::pos(), true)) {

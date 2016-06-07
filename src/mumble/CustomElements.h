@@ -12,6 +12,7 @@
 # include <QtWidgets/QLabel>
 # include <QtWidgets/QTextBrowser>
 # include <QtWidgets/QTextEdit>
+# include <QtWidgets/QStatusBar>
 #else
 # include <QtGui/QLabel>
 # include <QtGui/QTextBrowser>
@@ -88,6 +89,14 @@ class DockTitleBar : public QLabel {
 		void tick();
 	protected:
 		bool eventFilter(QObject *, QEvent *) Q_DECL_OVERRIDE;
+};
+
+class PingStatusBar : public QStatusBar {
+	private:
+		Q_OBJECT
+		Q_DISABLE_COPY(PingStatusBar)
+	public:
+		PingStatusBar(QWidget *p = NULL);
 };
 
 #endif // CUSTOMELEMENTS_H_

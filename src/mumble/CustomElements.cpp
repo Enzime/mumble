@@ -345,3 +345,5 @@ void DockTitleBar::tick() {
 	size = newsize;
 	qdw->setTitleBarWidget(this);
 }
+
+PingStatusBar::PingStatusBar(QWidget *p) : QStatusBar(p) {}
