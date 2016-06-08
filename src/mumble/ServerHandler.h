@@ -11,6 +11,8 @@
 # include <boost/accumulators/statistics/stats.hpp>
 # include <boost/accumulators/statistics/mean.hpp>
 # include <boost/accumulators/statistics/variance.hpp>
+# include <boost/accumulators/statistics/rolling_mean.hpp>
+# include <boost/accumulators/statistics/rolling_variance.hpp>
 # include <boost/shared_ptr.hpp>
 #endif
 
@@ -38,6 +40,7 @@ class Message;
 class PacketDataStream;
 class QUdpSocket;
 class VoiceRecorder;
+typedef boost::accumulators::accumulator_set<double, boost::accumulators::stats<boost::accumulators::tag::mean, boost::accumulators::tag::variance, boost::accumulators::tag::count, boost::accumulators::tag::rolling_mean, boost::accumulators::tag::rolling_variance> > PingAccumulator;
 
 class ServerHandlerMessageEvent : public QEvent {
 	public:
@@ -86,7 +89,7 @@ class ServerHandler : public QThread {
 		QString qsOS;
 		QString qsOSVersion;
 
-		boost::accumulators::accumulator_set<double, boost::accumulators::stats<boost::accumulators::tag::mean, boost::accumulators::tag::variance, boost::accumulators::tag::count> > accTCP, accUDP, accClean;
+		PingAccumulator *accTCP, *accUDP;
 
 		ServerHandler();
 		~ServerHandler();

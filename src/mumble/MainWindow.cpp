@@ -1293,8 +1293,8 @@ void MainWindow::on_qaServerInformation_triggered() {
 	                  Qt::escape(c->sessionProtocolString()),
 	                  cipherDescription,
 	                  cipherPFSInfo,
-	                  QString::fromLatin1("%1").arg(boost::accumulators::mean(g.sh->accTCP), 0, 'f', 2),
-	                  QString::fromLatin1("%1").arg(sqrt(boost::accumulators::variance(g.sh->accTCP)),0,'f',2),
+	                  QString::fromLatin1("%1").arg(boost::accumulators::mean(*(g.sh->accTCP)), 0, 'f', 2),
+	                  QString::fromLatin1("%1").arg(sqrt(boost::accumulators::variance(*(g.sh->accTCP))),0,'f',2),
 	                  Qt::escape(host),
 	                  QString::number(port));
 	if (g.uiMaxUsers) {
@@ -1306,7 +1306,7 @@ void MainWindow::on_qaServerInformation_triggered() {
 	if (NetworkConfig::TcpModeEnabled()) {
 		qsVoice = tr("Voice channel is sent over control channel");
 	} else {
-		qsVoice = tr("<h2>Voice channel</h2><p>Encrypted with 128 bit OCB-AES128<br />%1 ms average latency (%4 deviation)</p>").arg(boost::accumulators::mean(g.sh->accUDP), 0, 'f', 2).arg(sqrt(boost::accumulators::variance(g.sh->accUDP)),0,'f',2);
+		qsVoice = tr("<h2>Voice channel</h2><p>Encrypted with 128 bit OCB-AES128<br />%1 ms average latency (%4 deviation)</p>").arg(boost::accumulators::mean(*(g.sh->accUDP)), 0, 'f', 2).arg(sqrt(boost::accumulators::variance(*(g.sh->accUDP))),0,'f',2);
 		qsCrypt = QString::fromLatin1("<h2>%1</h2><table><tr><th></th><th>%2</th><th>%3</th></tr>"
 		                              "<tr><th>%4</th><td>%8</td><td>%12</td></tr>"
 		                              "<tr><th>%5</th><td>%9</td><td>%13</td></tr>"
@@ -3034,8 +3034,8 @@ void MainWindow::customEvent(QEvent *evt) {
 void MainWindow::on_qtePing_tick() {
 	// qWarning() << "hey!";
 	qtePing->showMessage(tr("%1 ms ± %2").arg(
-	            QString::fromLatin1("%1").arg(boost::accumulators::mean(g.sh->accTCP), 0, 'f', 2),
-	            QString::fromLatin1("%1").arg(sqrt(boost::accumulators::variance(g.sh->accTCP)),0,'f',2)
+	            QString::fromLatin1("%1").arg(boost::accumulators::rolling_mean(*(g.sh->accTCP)), 0, 'f', 2),
+	            QString::fromLatin1("%1").arg(sqrt(boost::accumulators::rolling_variance(*(g.sh->accTCP))),0,'f',2)
 	));
 }
 

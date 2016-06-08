@@ -176,7 +176,7 @@ void ServerHandler::udpReady() {
 			case MessageHandler::UDPPing: {
 					quint64 t;
 					pds >> t;
-					accUDP(static_cast<double>(tTimestamp.elapsed() - t) / 1000.0);
+					(*accUDP)(static_cast<double>(tTimestamp.elapsed() - t) / 1000.0);
 				}
 				break;
 			case MessageHandler::UDPVoiceCELTAlpha:
@@ -302,7 +302,8 @@ void ServerHandler::run() {
 
 	g.mw->rtLast = MumbleProto::Reject_RejectType_None;
 
-	accUDP = accTCP = accClean;
+	accUDP = new PingAccumulator(boost::accumulators::tag::rolling_window::window_size = 5);
+	accTCP = new PingAccumulator(boost::accumulators::tag::rolling_window::window_size = 5);
 
 	uiVersion = 0;
 	qsRelease = QString();
@@ -413,17 +414,17 @@ void ServerHandler::sendPing() {
 	mpp.set_resync(cs.uiResync);
 
 
-	if (boost::accumulators::count(accUDP)) {
-		mpp.set_udp_ping_avg(static_cast<float>(boost::accumulators::mean(accUDP)));
-		mpp.set_udp_ping_var(static_cast<float>(boost::accumulators::variance(accUDP)));
+	if (boost::accumulators::count(*accUDP)) {
+		mpp.set_udp_ping_avg(static_cast<float>(boost::accumulators::mean(*accUDP)));
+		mpp.set_udp_ping_var(static_cast<float>(boost::accumulators::variance(*accUDP)));
 	}
-	mpp.set_udp_packets(static_cast<int>(boost::accumulators::count(accUDP)));
+	mpp.set_udp_packets(static_cast<int>(boost::accumulators::count(*accUDP)));
 
-	if (boost::accumulators::count(accTCP)) {
-		mpp.set_tcp_ping_avg(static_cast<float>(boost::accumulators::mean(accTCP)));
-		mpp.set_tcp_ping_var(static_cast<float>(boost::accumulators::variance(accTCP)));
+	if (boost::accumulators::count(*accTCP)) {
+		mpp.set_tcp_ping_avg(static_cast<float>(boost::accumulators::mean(*accTCP)));
+		mpp.set_tcp_ping_var(static_cast<float>(boost::accumulators::variance(*accTCP)));
 	}
-	mpp.set_tcp_packets(static_cast<int>(boost::accumulators::count(accTCP)));
+	mpp.set_tcp_packets(static_cast<int>(boost::accumulators::count(*accTCP)));
 
 	sendMessage(mpp);
 }
@@ -459,7 +460,7 @@ void ServerHandler::message(unsigned int msgType, const QByteArray &qbaMsg) {
 			cs.uiRemoteLate = msg.late();
 			cs.uiRemoteLost = msg.lost();
 			cs.uiRemoteResync = msg.resync();
-			accTCP(static_cast<double>(tTimestamp.elapsed() - msg.timestamp()) / 1000.0);
+			(*accTCP)(static_cast<double>(tTimestamp.elapsed() - msg.timestamp()) / 1000.0);
 
 			if (((cs.uiRemoteGood == 0) || (cs.uiGood == 0)) && bUdp && (tTimestamp.elapsed() > 20000000ULL)) {
 				bUdp = false;
