@@ -403,6 +403,7 @@ void MainWindow::updateToolbar() {
 void MainWindow::setShowDockTitleBars(bool doShow) {
 	dtbLogDockTitle->setEnabled(doShow);
 	dtbChatDockTitle->setEnabled(doShow);
+	dtbPingDockTitle->setEnabled(doShow);
 }
 
 MainWindow::~MainWindow() {
